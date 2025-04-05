@@ -3,11 +3,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import io
-import openpyxl
 import math
 
+# Set page configuration
 st.set_page_config(page_title="QST Thermal Parameters Analyzer", layout="wide")
 
+# Define which parameters are log-transformed
 LOG_TRANSFORMED_PARAMETERS = ["CDT", "WDT"]  # CDT and WDT are log-transformed according to the grey shading
 
 def load_reference_values():
@@ -369,6 +370,7 @@ def display_results(results):
                 df = pd.DataFrame(data)
                 st.table(df)
                 
+                # Create visualization
                 fig, ax = plt.subplots(figsize=(10, 4))
                 
                 areas = [area.capitalize() for area in ['face', 'hand', 'feet'] if area in results[param]]
@@ -405,16 +407,41 @@ def display_results(results):
 def main():
     st.title("QST Thermal Parameters Analyzer")
     
+    # Display app description and instructions
+    st.markdown("""
+    This application analyzes Quantitative Sensory Testing (QST) thermal parameters and compares them to age and gender-matched reference values.
     
+    ### Instructions:
+    1. Enter patient demographics in the sidebar
+    2. Upload an Excel file containing QST data
+    3. Select the summary sheet and map tests to body areas
+    4. Analyze the results
+    """)
+    
+    # Load reference values
     reference_values = load_reference_values()
     
+    # Sidebar for patient information
     st.sidebar.header("Patient Information")
     gender = st.sidebar.radio("Gender:", ["male", "female"])
     age = st.sidebar.number_input("Age:", min_value=18, max_value=100, value=50)
     
+    # About section in sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.header("About")
+    st.sidebar.info("""
+    **QST Thermal Parameters Analyzer**
+    
+    This tool helps analyze thermal QST parameters (CDT, WDT, CPT, HPT) 
+    and compares them to age and gender-matched normative data.
+    
+    Data is processed locally in your browser and not stored on any server.
+    """)
+    
+    # Main interface
     st.subheader("Upload QST Excel File")
     
-    
+    # File uploader
     uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx", "xls"])
     
     if uploaded_file is not None:
